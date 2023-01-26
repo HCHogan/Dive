@@ -6,8 +6,9 @@ public:
 
 class DecoratorStream : public Stream{
 protected:
-    DecoratorStream(Stream* stm) : stream(stm) {}
     Stream* stream;
+public:
+    DecoratorStream(Stream* stm) : stream(stm) {}
 };
 
 class FileStream : public Stream {
@@ -20,6 +21,8 @@ class FileStream : public Stream {
 };
 
 class CryptoStream : public DecoratorStream {
+public:
+    CryptoStream(Stream* stm): DecoratorStream(stm) { }
     virtual void Read() {
         stream->Read();
         // crypto
@@ -31,6 +34,8 @@ class CryptoStream : public DecoratorStream {
 };
 
 class BufferedStream : public DecoratorStream {
+public:
+    BufferedStream(Stream* stm): DecoratorStream(stm) { }
     virtual void Read() {
         stream->Read();
         //Buffer
@@ -42,5 +47,7 @@ class BufferedStream : public DecoratorStream {
 };
 
 void Process() {
-    
+    FileStream* fs1 =new FileStream();
+    CryptoStream* fs2 = new CryptoStream(fs1);
+    BufferedStream* fs3 = new BufferedStream(fs2);
 }
