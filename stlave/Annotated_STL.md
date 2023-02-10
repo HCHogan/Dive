@@ -237,5 +237,57 @@ void foo(const T& t)
 这样，编译器就确定了T::bar是一个类型名，p也就自然地被解释为指向T::bar类型的对象的指针了。
 ### iterator_tags
 
+### example
+cout << count_if
+
+## std::bind
+可以绑定：
+1. functions
+2. function objects, _1 必须是某个object地址
+3. member functions, _1 必须是某个object地址
+4. data members
+```cpp
+double my_divide(double x, double y) {
+	return x/y;
+}
+
+struct my_pair {
+	double a,b;
+	double multiply() {return a * b}
+};
+
+using namespace ::std::placeholders;
+
+auto fn_five = bind(my_divide, 10, 2);
+cout << fn_five() << '\n';
+
+auto fn_half = bind(my_divide, _1, 2);		//have a placeholder here
+cout << fn_half(10);
+
+auto fn_invert = bind(my_divide, _2, _1);
+cout << fn_invert(10, 2);
+
+auto fn_rounding = bind<int>(my_divide, _1, _2);
+cout << fn_rounding(10, 3) << '\n';				// cout 3
+
+// binding members
+my_pair ten_two {10, 2};	// member function 其实有个argument: this
+							// c++ 11 才有这个写法
+
+auto bound_memfn = bind(&my_pair::multiply, _1);	// returns x.multiply()
+cout << bound_memfn(ten_two) << endl;				//相当于调用了ten_two.multiply
+
+auto bound_memdata = bind(&my_pair::a, ten_two);	// return ten_two.a
+cout << bound_memdata() << endl;					// 10
+
+auto bound_memdata2 = bind(&my_pair::b, _1);		// return x.b
+cout << bound_memdata2(ten_two) << endl;
+
+int n = count_if(v.cbegin(), v.cend(), not1(bind2nd(less<int>(), 50)));
+auto fn_ = bind(less<int>(), _1, 50);
+int n = count_if(v.cbegin(), v.cend(), fn_) << endl;
+```
+
 ## Object-Oriented Programming
 + In obeject-oriented concepts, inheriting a class as public means that they have an "is" relationship.
+
