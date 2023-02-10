@@ -24,7 +24,24 @@ void print(const T& firstArg, const Types&... args) {	//可以是任何类型的
 可以很方便的完成recursive function call
 EG: CustomerHash.hpp
 EG: Tuple
+
+### Uniform Initialization
++ Before C++11, programmers, especially novices, could easily become confused by the question of how to initialize a variable or an object. Initialization could happen with parentheses, braces, and/or assignment operators.
++ For this reason, C+ + 11 introduced the concept of uniform initialization, which means that for any initialization, you can use one common syntax. This syntax uses braces, so the following is possible now.
++ 其實是利用一個事實：編譯器看到 {11,2...1} 便做出一個 initializer list<T>,它關聯至一 個 array<T,n>可西數（例如ctor) 時該 array 内的元素可被編譯器分解逐一傳給西數。但若西數參數是個 initializer_list<T>，調用者卻不能給予數個T参數然後以為它們會被白動轉為一個 initializer_list<T>傳入
+```cpp
+int values[] {1, 2, 3};
+vector<int> v {2, 3, 5, 7};
+vector<string> cities { "Ber", "New York", "Lon"};
+//  这会形成一个initializer_list<string>,背后有个array<string,6>,调用vector<string> ctors时编译器找到了一个接受initializer_list<string>的ctor. 所有容器都有此ctor.
+complex<double> c {4.0, 3.0}; 
+//形成一个initializer_list<double,2>, 而complex的ctor并无任何接受initializer_list的ctor,所以分解为一个个但个元素传给ctor.
+```
+### lambda
+auto l = [](int x) -> bool { };
+
 ### move Semantics
+
 
 ### auto
 
