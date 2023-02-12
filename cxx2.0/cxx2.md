@@ -37,6 +37,25 @@ vector<string> cities { "Ber", "New York", "Lon"};
 complex<double> c {4.0, 3.0}; 
 //形成一个initializer_list<double,2>, 而complex的ctor并无任何接受initializer_list的ctor,所以分解为一个个但个元素传给ctor.
 ```
+### Range based for-loop
+```cpp
+for( decl : coll ) {
+	statements;
+}
+for (int x : {1, 2, 3}) {
+
+}
+coll 只要是容器,iteratable就行
+
+```
++ 当ctor定义的时候用了explicit 就不能const C& elem : val
+
+### default & delete
+如果你自行定義了一個 ctor，那麼編譯器
+就不會再給你一個 default ctor。
+如果你強制加上=deault，就可以重新獲得並使用 default ctor。
+= delete 就是不用这个ctor
+
 ### lambda
 auto l = [](int x) -> bool { };
 
