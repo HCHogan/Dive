@@ -1,3 +1,5 @@
+#include <bits/stdc++.h>
+
 template<typename... Values> class tuple;
 template<> class tuple<> { };
 
@@ -15,3 +17,4 @@ public:
 protected:
 	Head m_head;
 };
+

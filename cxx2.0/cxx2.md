@@ -56,6 +56,48 @@ coll 只要是容器,iteratable就行
 如果你強制加上=deault，就可以重新獲得並使用 default ctor。
 = delete 就是不用这个ctor
 
+### Alias template
+原来只能这样写,如果不标准,那寄
+```cpp
+template<typename Container>
+void test_movable(Container ctnr) {
+	typedef typename iterator_traits<typename Container::iterator>::value_type Valtype;
+
+	for(long i = 0; i <= SIZE; i++) {
+		ctnr.insert(c.end(), Valtype);
+	}
+
+	output_static_data(*(ctnr.begin()));
+		
+	Container c1(ctnr);
+	Container c2(std::move(c));
+
+	c1.swap(c2);
+}
+test_movable(list<std::string>());
+```
+使用alias Template
+```cpp
+
+```
+
+### Template template parameter
+```cpp
+template<typename T, template<class> class Container>
+class XCls {
+private:
+	Container<T> c;
+}
+
+XCls<MyString, vector> cl;
+// ERROR: vector有两个模板参数 但是申明里面只写传了一个 报错
+// 这个时候使用alias template
+template<typename T>
+using Vec = vector<T, allocator<T>>;	//绑定两个参数
+
+XCls<Mystring, Vec> c1;
+```
+
 ### lambda
 auto l = [](int x) -> bool { };
 
