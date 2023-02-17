@@ -9,3 +9,5 @@ template<typename _Tp>
 inline _Tp max(initializer_list<_Tp> __l) {
 	return *std::max_element(__l.begin(), __l.end());
 }
+
+

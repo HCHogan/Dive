@@ -42,13 +42,22 @@ complex<double> c {4.0, 3.0};
 for( decl : coll ) {
 	statements;
 }
+
 for (int x : {1, 2, 3}) {
 
 }
 coll 只要是容器,iteratable就行
 
 ```
-+ 当ctor定义的时候用了explicit 就不能const C& elem : val
++ 当C的ctor定义的时候用了explicit 就不能const C& elem : val
+
+explicit为清晰的;明确的之意.顾名思义,关键字explicit可以阻止隐式转换的发生.
+例如: C++中只带有一个参数的构造函数,或者或者除了第一个参数外其余参数都有缺省值的多参构造函数,承担了两个角色:
+1.用于构建单参数的类对象.
+2.隐含的类型转换操作符.
+
+例如:一个类A的构造函数A(int i)就是，既可以用来作为构造器，又可以实现隐式转换A a=1；因为1可以通过构造函数A(int i)转换为一个类A的对象。(隐含的类型转换操作符)
+但有时我们并不想让他进行隐式类型转换,这时C++的explicit关键字就起到作用了.
 
 ### default & delete
 如果你自行定義了一個 ctor，那麼編譯器
