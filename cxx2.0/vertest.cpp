@@ -10,3 +10,4 @@ void print(const T& firstArg, const Types&... args) {
 	cout << firstArg << endl;
 	print(args...);
 }
+	
