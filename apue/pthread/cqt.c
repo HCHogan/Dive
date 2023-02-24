@@ -40,7 +40,7 @@ int main() {
 		}
 		last = tmp;
 	}
-	printf("%d", cnt);
+	printf("%d\n", cnt);
 
 	return 0;
 
