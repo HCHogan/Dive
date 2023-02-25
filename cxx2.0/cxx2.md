@@ -107,6 +107,73 @@ using Vec = vector<T, allocator<T>>;	//绑定两个参数
 XCls<Mystring, Vec> c1;
 ```
 
+### noexcept
+```cpp
+void foo() noexcept(true);
+void swap(Type& x, Type& y) noexcept(noexcept(x.swap(y))) {
+	x.swap(y);
+}
+```
+if the program throws, the program will terminate, calling std::terminate(), which by default calls std::abort()
+Specifying noexcept without condition is a short form of specifying noexcept(true)
+
+You need to inform C++ (specially std::vector) that your move constructor and destructor does not throw. Then the move constructor will be called when the vector grows. If the constructor is not noexcept, std::vecotr can't use it. Since the it can't ensure the exception guarantees demanded by the standard.
+ that your move constructor and destructor does not throw. Then the move constructor will be called when the vector grows. If the constructor is not noexcept, std::vecotr can't use it. Since the it can't ensure the exception guarantees demanded by the standard.
+由于vector无法处理这些异常，所以必须申明为noexcept vector才能放心调用move constructor.
+
+```cpp
+class MyString {
+private:
+	char* _data;
+	size_t _len;
+	...
+
+public:
+	// move constructor
+	MyString(MyString&& str) noexcept
+	: _data(str.data), _len(str.len) {...}
+
+	// move assignment
+	MyString& operator=(MyString&& str) noexcept
+	{ ... return *this; }
+}
+```
+#### stack unwinding
+**栈展开(stack unwinding)的定义**
+
+抛出异常时，将暂停当前函数的执行，开始查找匹配的 catch 子句。首先检查 throw 本身是否在 try 块内部，如果是，检查与该 try 相关的 catch 子句，看是否可以处理该异常。如果不能处理，就退出当前函数，并且释放当前函数的内存并销毁局部对象，继续到上层的调用函数中查找，直到找到一个可以处理该异常的 catch 。这个过程称为栈展开(stack unwinding)。当处理该异常的 catch 结束之后，紧接着该 catch 之后的点继续执行。为局部对象调用析构函数
+
+在栈展开的过程中，会释放局部对象所占用的内存并运行类类型局部对象的析构函数。但需要注意的是，如果一个块通过 new 动态分配内存，并且在释放该资源之前发生异常，该块因异常而退出，那么在栈展开期间不会释放该资源，编译器不会删除该指针，这样就会造成内存泄露。
+
+析构函数应该从不抛出异常
+
+在为某个异常进行栈展开的时候，析构函数如果又抛出自己的未经处理的另一个异常，将会导致调用标准库 terminate 函数。通常 terminate 函数将调用 abort 函数，导致程序的非正常退出。所以析构函数应该从不抛出异常。
+
+异常与构造函数
+
+如果在构造函数对象时发生异常，此时该对象可能只是被部分构造，要保证能够适当的撤销这些已构造的成员。
+
+未捕获的异常将会终止程序
+
+不能不处理异常。如果找不到匹配的catch，程序就会调用库函数terminate。
+
+### override
+override means that the compiler will check the base class to see if there is a virtual function with this exact signature.
+Base: virtual void vfunc(float);
+Derive: virtual void vfunc(int);
+在之前版本这样做子类会创建一个新的virtual function
+CXX2.0中,使用virtual void vfunc(float) override 显式告诉编译器你要重写
+如果写成了virtial void vfunc(int) override 则会报错
+
+### final
+struct Base1 final { };
+告诉编译器这是继承链的最后一个,不能再被继承,否则报错
+virtual void f() final;
+告诉编译器不允许被它的子类复写,否则报错
+
+### decltype
+declval converts aany type T to a 
+
 ### lambda
 auto l = [](int x) -> bool { };
 
