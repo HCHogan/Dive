@@ -172,10 +172,121 @@ virtual void f() final;
 告诉编译器不允许被它的子类复写,否则报错
 
 ### decltype
-declval converts aany type T to a 
+**defines a type equivalent to the type of an expression**
+declval converts any type T to a reference type, making it possible to use member funcitons in decltype expressions without the need to go through constructors.
 
-### lambda
+decltype allows the compiler to infer the return type of a function based on an arbitrary expression, which makes perferct **forwarding** more generic. In past versions, for two arbitrary types T1 and T2, there was no way to deduce the type of an expression that used these two types. The decltype feature allows you to state, for example, an expression that has template arguments, such as sum**<T1, T2>()** has the type **T1 + T2**
+
+By using the new decltype keyword, you can let the compiler find out the type of an expression. This is the realization of the often requested **typeof** feature. However, the existing typeof implementations were inconsistent and incomplete, so C++11 introduced a new keyword. For example:
+```cpp
+map<string, float> coll;
+decltype(coll)::value_type elem;
+// before C++11 map<string, float>::Value_type elem;
+```
+One application of decltype is to declare return types. Another is to use it in **metaprogramming** or to pass the type if a lambda.
+
+#### decltype, used to declare return types
+sometimes, the return type of a function depends on an expression processed with arguments.
+However, something like
+```cpp
+tempalte<typename T1, Typename T2>
+decltype(x+y) add(T1 x, T2, y);
+```
+was not possible before C++11, because the return expression uses objects not introduced or in scope yet.
+But with C++11, you can alternatively declare the return type of a funciton behind the parameter list:
+```cpp
+auto add(T1 x, T2 y) -> decltype(x+y);
+```
+This uses the same syntax as for lambdas to declare return types.
+
+#### decltype, used for metaprogramming
+```cpp
+template<typename T> 
+void test18_decltype(T obj) {
+	map<string, float>::value_type elem1;			// 面对type,可以取其inner typedef
+
+	map<string, float> coll;
+	decltype(coll):value_type elem2;				// 面对obj,取其class type 的 inner typedef
+}
+test19_decltype(complex<int>)());					// 编译失败
+```
+
+#### decltype, used to pass the type of a lambda
+```cpp
+auto cmp = [](const Person& p1, const Person& p2) {
+	return p1.lastname() < p2.lastname()
+};
+...
+std::set<Person, decltype(cmp)> coll(cmp);
+```
+面对lambda,我们手上往往只有object,没有Type,要获得type只能用decltype
+()是什么意思? function call
+
+### Lambdas
 auto l = [](int x) -> bool { };
+C++11 introduced *lambdas*, allowing the definition of inline functionality, which can be used as a parameter or a local object. Lambdas change the way the C++ standard library is used.
+A lambda is a **definition of functionality** that can be defined inside statements and expressions. Thus, you can use a lambda as an inline funciton. The minimal lambda function has no parameters and simply does something:
+```cpp
+[] {
+	std::cout << "hello lambda" << std::endl;
+}
+```
+you can use it directly:
+```cpp
+[] {
+	std::cout << "hello lambda" << std::endl;
+} ();			// prints hello lambda
+```
+or pass it to the objects to get called:
+```cpp
+auto I = [] {
+	std::cout << "hello lambda" << std::endl;
+}
+...
+I();			// prints hello lambda
+```
+
+**[...] (...) mutableopt throwSpecopt ->returnTypeopt {...};**
+[ : lambda introducer
+... : **capture** to access **nonstatic outside objects** inside the lambda. Static objects such as std::cout can be used. you can specify a capture to access data of outer scope that is not passed as an argument:
+[=] means that the outer scope is passed to the lambda by value.
+[&] means that the outer scope is passed to the lambda by reference.
+mutable: objects that are passed by value, but inside the funciton object defined by the lambda, you have write access to the passed value.
+returnType: without any specify definition, it is deduced from the return value.
+Ex:
+```cpp
+int x = 0;
+int y = 42;
+auto qqq = [x, &y] {...};		// pass x by value, y by reference
+								// [=, &y] to pass y by reference and all other objects by value.
+```
+In fact, the type of a lambda is an anonymous function object(or functor) which overloaded the **function call** operator.(())
+```cpp
+int id = 0;
+auto f = [id]() mutable {
+	std::cout << "id:" << id << std::endl;
+	++id; //OK
+};
+
+id = 42
+f(); f(); f();					// prints 0, 1, 2
+std::cout << id << std::endl;	// prints 42
+```
+This equals to:
+```cpp
+class Functor {
+private:
+	int id;						// copy of outside id
+public:
+	void operator() () {
+		std::cout << "id" << id << std::endl;
+		++id;					// OK
+	}
+};
+Functor f;
+// but without mutable, you do not have the power to give yourself the permission to have access to writing the id object.
+```
+if passed by reference
 
 ### move Semantics
 
