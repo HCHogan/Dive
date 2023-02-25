@@ -287,12 +287,47 @@ Functor f;
 // but without mutable, you do not have the power to give yourself the permission to have access to writing the id object.
 ```
 if passed by reference
+```cpp
+auto f = [&id](int param) {
+	cout << "id:" << id << endl;
+	++id; ++param;				// OK
+};
+id = 42;
+f(7);
+f(7);							//43
+f(7);							//44
+std::cout << id << std::endl;	//45
 
-### move Semantics
+int id = 0;
+auto f = [id]() {
+	cout << "id" << endl;
+	++id;						// G, increment of read-only variable 'id'
+};
+```
+mutable 表示仿函数这个类中的这个捕获的值可不可以被改变
+个人理解就是const int id = 1;
+Because you need the type of the lambda for the declaration of the set, decltype must be used, which yields the type of a lambda object, such as cmp. Note that you also have to pass the lambda object to the constructor of coll; otherwise, coll would call the default constructor for the sorting criterion passed, and by rule lambdas have no default constructor and no assignment operator. So, for a sorting criterion, a class defining the function objects might still be more intuitive.
+**因此如果被调用,编译器报错use of undeclared function ...**
 
+### Variadic Templates
++ 谈的是Templates
+- function Templates
+- class Templates
++ 变化的是templates parameters
+- variable number  利用参数个数逐一递减的特性,实现递归函数的调用
+- different type	利用参数个数逐个递减导致参数类型也逐一递减的特性,实现递归继承或复合,以class template 完成
+for example:
+```cpp
+template<typename T, typename... Types>
+void func(const T& firstArg, const Types&... args) {
+	// 处理firstArg
+	func(args...)
+}
+```
+```cpp
+template<typename args...> 和 template<typename T, typename... args> 可以共存,前者更加泛化,应为后者只能穿两个或以上的参数
 
-### auto
-
+```
 
 ## libraries (header files)
 
