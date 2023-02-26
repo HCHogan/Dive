@@ -328,6 +328,8 @@ void func(const T& firstArg, const Types&... args) {
 template<typename args...> 和 template<typename T, typename... args> 可以共存,前者更加泛化,应为后者只能穿两个或以上的参数
 
 ```
-
+EG:
++ printf.cpp
++ max.cpp
 ## libraries (header files)
 
