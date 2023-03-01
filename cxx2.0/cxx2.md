@@ -1,29 +1,10 @@
 # C++ 2.0 New Features
-C++ 98 (1.0)
-c++ 03 (TR1)
-c++ 11 (2.0)
-c++ 14
++ C++ 98 (1.0)
++ c++ 03 (TR1)
++ c++ 11 (2.0)
++ c++ 14
 
 ## Language
-
-### Variadic Templates
-```cpp
-void print() {
-
-}
-
-template <typename T, typename... Types>
-void print(const T& firstArg, const Types&... args) {	//可以是任何类型的任意数量的东西
-	cout << firstArg << endl;	// print first argument
-	print(args...);				// call print() for remaining arguments
-}
-
-// inside the vt, sizeof...(args) yields the number of arguments
-```
-... 就是所谓的pack(包)
-可以很方便的完成recursive function call
-EG: CustomerHash.hpp
-EG: Tuple
 
 ### Uniform Initialization
 + Before C++11, programmers, especially novices, could easily become confused by the question of how to initialize a variable or an object. Initialization could happen with parentheses, braces, and/or assignment operators.
@@ -325,6 +306,19 @@ void func(const T& firstArg, const Types&... args) {
 }
 ```
 ```cpp
+void print() {
+
+}
+
+template <typename T, typename... Types>
+void print(const T& firstArg, const Types&... args) {	//可以是任何类型的任意数量的东西
+	cout << firstArg << endl;	// print first argument
+	print(args...);				// call print() for remaining arguments
+}
+
+// inside the vt, sizeof...(args) yields the number of arguments
+```
+```cpp
 template<typename args...> 和 template<typename T, typename... args> 可以共存,前者更加泛化,应为后者只能穿两个或以上的参数
 
 ```
@@ -333,7 +327,45 @@ EG:
 + max.cpp
 + print_tuple.cpp
 + recursive inheritance
+... 就是所谓的pack(包)
+可以很方便的完成recursive function call
+EG: CustomerHash.hpp
+EG: Tuple.hpp
+也可以完成递归组合
+EG: Tuple-composited.hpp
+
 
 sizeof... 可以获取Arg...的元素个数
+
+### Rvalue reference
+Rvalue references are a new ference type introduced in C++0x that help solve the problem of unnecessary copying and enable perferct forwarding. When the right-hand side of an assignment is an rvalue, then the left-hand side object can **steal** resources from the right-hand side object rather than performing a separate allocation, thus enabling move semantics.
+```cpp
+string() = "world";				// compilation success?!
+c1 + c2 = complex<int>(4,9);	// TOO?!
+```
+C++ with its user-defined types has introduced some subtitles regarding modifiability and assignability that cause this definition to be incorrect.
+**after move, the previous object is no longer useable** 
+```cpp
+class MyString {
+private:
+	char* _data;
+
+public:
+	MyString(const MyString& str) : initialization list {
+		// copy
+	}
+
+	MyString(MyString&& str) noexcept : initialize list {		// you need to inform C++(specifically std::vector) that your move constructor and destructor does not thorw. Then the move constructor will be called when the vector grows.
+		// move
+	}
+
+	void insert(..., &&x);
+
+};
+
+std::move(c1);			// welcome to steal me
+						// but make sure that c1 is not used anymore
+```
+
 ## libraries (header files)
 
