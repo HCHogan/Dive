@@ -355,8 +355,10 @@ public:
 		// copy
 	}
 
-	MyString(MyString&& str) noexcept : initialize list {		// you need to inform C++(specifically std::vector) that your move constructor and destructor does not thorw. Then the move constructor will be called when the vector grows.
-		// move
+	MyString(MyString&& str) noexcept : initialize list {		
+	// you need to inform C++(specifically std::vector) that your move constructor and destructor does not thorw. 
+	// Then the move constructor will be called when the vector grows.
+	// move
 	}
 
 	void insert(..., &&x);
@@ -365,6 +367,42 @@ public:
 
 std::move(c1);			// welcome to steal me
 						// but make sure that c1 is not used anymore
+```
+
+### Perfect Forwarding
+```cpp
+c.insert(ite, Vtype(buf));
+// move
+insert(...&& x);
+MyString(MyString&& str) noexcept : initializerlist {
+	...
+}
+
+```
+Perfect forwarding allows you to write a single function template that takes n arbitrary arguments and forwards them transparently to another arbitrary function. The nature of the argument (modifiable, const, lvalue or rvalue) is preserved in this forwarding process.
+```cpp
+template<typename T1, typename T2>
+void functionA(T1&& t1, T2&& t2) {
+	functionB(std::forward<T1>(t1), std::forward<T2>(t2));
+}
+```
+
+**Unperfect Forwarding** 
+```cpp
+void process(int&& x) {
+	cout << "int&&" << endl;
+}
+
+void process(int& x) {
+	cout << "int&" << endl;
+}
+
+void forward(int&& i) {
+	process(i);
+}
+
+forward(move(a));		// "int&"
+						// 变为了named object
 ```
 
 ## libraries (header files)
