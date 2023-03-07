@@ -1,21 +1,30 @@
-	.section	__TEXT,__text,regular,pure_instructions
-	.build_version macos, 13, 0	sdk_version 13, 1
-	.globl	_cmp                            ; -- Begin function cmp
-	.p2align	2
-_cmp:                                   ; @cmp
+	.text
+	.file	"cmp.c"
+	.globl	cmp                             # -- Begin function cmp
+	.p2align	4, 0x90
+	.type	cmp,@function
+cmp:                                    # @cmp
 	.cfi_startproc
-; %bb.0:
-	sub	sp, sp, #16
+# %bb.0:
+	pushq	%rbp
 	.cfi_def_cfa_offset 16
-	str	w0, [sp, #12]
-	str	w1, [sp, #8]
-	ldr	w8, [sp, #12]
-	ldr	w9, [sp, #8]
-	subs	w8, w8, w9
-	cset	w8, lt
-	and	w0, w8, #0x1
-	add	sp, sp, #16
-	ret
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register %rbp
+	movl	%edi, -4(%rbp)
+	movl	%esi, -8(%rbp)
+	movl	-4(%rbp), %eax
+	cmpl	-8(%rbp), %eax
+	setl	%al
+	andb	$1, %al
+	movzbl	%al, %eax
+	popq	%rbp
+	.cfi_def_cfa %rsp, 8
+	retq
+.Lfunc_end0:
+	.size	cmp, .Lfunc_end0-cmp
 	.cfi_endproc
-                                        ; -- End function
-.subsections_via_symbols
+                                        # -- End function
+	.ident	"clang version 15.0.7"
+	.section	".note.GNU-stack","",@progbits
+	.addrsig
