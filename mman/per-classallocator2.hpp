@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 class Airplane {
 private:
 	struct AirplaneRep {

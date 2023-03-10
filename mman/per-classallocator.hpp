@@ -77,7 +77,7 @@ const int Airplane::BLOCK_SIZE = 512;
 
 void* Airplane::operator new(size_t size) {
 	// 继承发生时,大小不为1
-	if(size != sizeof(Airplane)) return ::operator new(size);
+	if(size != sizeof(Airplane)) return ::operator new(size);	// hand it to the global function
 
 	Airplane* p =headOfFreeList;
 	if(p) headOfFreeList = p->next;

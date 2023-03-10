@@ -1,8 +1,10 @@
-#include "./recursive_inheritance.cpp"
 #include <vector>
-
-tuple<tuple<>, tuple<tuple<>, tuple<tuple<>, tuple<tuple<>, tuple<>>>>> mytuple;
+#include "Tuple.hpp"
+#include <iostream>
 
 int main() {
+	
+	tuple<int, float, double, int*> mutup;
+	std::cout << mutup[2];
 	return 0;
 }
